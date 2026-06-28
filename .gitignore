@@ -29,3 +29,7 @@ prisma/migrations/
 
 # uploads
 public/uploads/
+
+AGENTS.md
+CLAUDE.md
+update-theme.js
