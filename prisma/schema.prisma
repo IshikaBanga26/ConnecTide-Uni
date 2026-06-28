@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile          Profile?
+  sentRequests     Connection[] @relation("sender")
+  receivedRequests Connection[] @relation("receiver")
+  notifications    Notification[]
+
+  skillListings     SkillListing[]
+  studyGroups       StudyGroupMember[]
+  createdGroups     StudyGroup[]
+  uploadedResources Resource[]
+  resourceRatings   ResourceRating[]
+
+  @@map("users")
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  avatar       String?
+  bio          String?
+  department   String?
+  year         Int?
+  college      String?
+  linkedin     String?
+  github       String?
+  portfolio    String?
+  availability String?
+  isPublic     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  skills      ProfileSkill[]
+  wantToLearn WantToLearn[]
+  interests   ProfileInterest[]
+
+  @@map("profiles")
+}
+
+model Skill {
+  id            String         @id @default(cuid())
+  name          String         @unique
+  profileSkills ProfileSkill[]
+  wantToLearn   WantToLearn[]
+  skillListings  SkillListing[]
+
+  @@map("skills")
+}
+
+model ProfileSkill {
+  id        String  @id @default(cuid())
+  profileId String
+  skillId   String
+  level     String?
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id])
+
+  @@unique([profileId, skillId])
+  @@map("profile_skills")
+}
+
+model WantToLearn {
+  id        String  @id @default(cuid())
+  profileId String
+  skillId   String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id])
+
+  @@unique([profileId, skillId])
+  @@map("want_to_learn")
+}
+
+model Interest {
+  id       String            @id @default(cuid())
+  name     String            @unique
+  profiles ProfileInterest[]
+
+  @@map("interests")
+}
+
+model ProfileInterest {
+  id         String   @id @default(cuid())
+  profileId  String
+  interestId String
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id])
+
+  @@unique([profileId, interestId])
+  @@map("profile_interests")
+}
+
+model Connection {
+  id         String           @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     ConnectionStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  sender     User             @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User             @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@map("connections")
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  CONNECTION_REQUEST
+  CONNECTION_ACCEPTED
+  SKILL_MATCH
+  STUDY_GROUP_INVITE
+  PROJECT_APPLICATION
+  RESOURCE_RATED
+  BADGE_EARNED
+  MESSAGE
+}
+
+// ─── SKILL EXCHANGE ──────────────────────────────────────────────────────────
+
+model SkillListing {
+  id          String      @id @default(cuid())
+  userId      String
+  skillId     String
+  type        ListingType 
+  description String?     
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill       Skill       @relation(fields: [skillId], references: [id])
+
+  @@unique([userId, skillId, type]) 
+  @@map("skill_listings")
+}
+
+enum ListingType {
+  TEACHING
+  LEARNING
+}
+
+// ─── STUDY GROUPS ────────────────────────────────────────────────────────────
+
+model StudyGroup {
+  id          String   @id @default(cuid())
+  creatorId   String
+  subject     String
+  examType    String?  
+  description String?
+  timing      String?  
+  maxMembers  Int      @default(10)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  creator     User               @relation(fields: [creatorId], references: [id])
+  members     StudyGroupMember[]
+
+  @@map("study_groups")
+}
+
+model StudyGroupMember {
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  group    StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId]) 
+  @@map("study_group_members")
+}
+
+// ─── RESOURCES ───────────────────────────────────────────────────────────────
+
+model Resource {
+  id           String   @id @default(cuid())
+  uploaderId   String
+  title        String
+  description  String?
+  fileUrl      String   
+  fileType     String   
+  subject      String
+  department   String?
+  semester     Int?
+  tags         String[] 
+
+  avgRating    Float    @default(0)
+  totalRatings Int      @default(0)
+
+  createdAt    DateTime @default(now())
+
+  uploader     User             @relation(fields: [uploaderId], references: [id])
+  ratings      ResourceRating[]
+
+  @@map("resources")
+}
+
+model ResourceRating {
+  id         String   @id @default(cuid())
+  resourceId String
+  userId     String
+  rating     Int      
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([resourceId, userId]) 
+  @@map("resource_ratings")
+}
