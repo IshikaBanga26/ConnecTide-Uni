@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { uploadToCloudinary } from "@/lib/cloudinary"
+import { reputationService } from "@/services/reputationService"
 
 type CreateResourceInput = {
   title: string
@@ -50,6 +51,9 @@ export const resourceService = {
         },
       },
     })
+
+    // Recalculate reputation in background — don't await so upload response is fast
+    reputationService.recalculate(uploaderId).catch(console.error)
 
     return resource
   },

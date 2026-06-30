@@ -24,6 +24,8 @@ model User {
   createdGroups     StudyGroup[]
   uploadedResources Resource[]
   resourceRatings   ResourceRating[]
+  reputation Reputation?
+  badges     UserBadge[]
 
   @@map("users")
 }
@@ -243,4 +245,42 @@ model ResourceRating {
 
   @@unique([resourceId, userId]) 
   @@map("resource_ratings")
+}
+
+// ─── REPUTATION & BADGES ─────────────────────────────────────────────────────
+
+model Reputation {
+  id               String @id @default(cuid())
+  userId           String @unique
+  knowledgeSharing Int    @default(0)
+  mentoring        Int    @default(0)
+  collaboration    Int    @default(0)
+  resourceQuality  Int    @default(0)
+
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reputations")
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String
+  icon        String
+  userBadges  UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  user     User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge    Badge @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
 }

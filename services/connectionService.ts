@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { ConnectionStatus } from "@prisma/client"
+import { reputationService } from "@/services/reputationService"
 
 export const connectionService = {
   async sendRequest(senderId: string, receiverId: string) {
@@ -80,6 +81,12 @@ export const connectionService = {
           data: { connectionId, receiverId: userId },
         },
       })
+    }
+
+    // Recalculate reputation for both users in background
+    if (accept) {
+      reputationService.recalculate(connection.senderId).catch(console.error)
+      reputationService.recalculate(userId).catch(console.error)
     }
 
     return updated
