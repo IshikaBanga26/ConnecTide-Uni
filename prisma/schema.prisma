@@ -26,6 +26,8 @@ model User {
   resourceRatings   ResourceRating[]
   reputation Reputation?
   badges     UserBadge[]
+  createdProjects Project[]
+  projectApps     ProjectApplication[]
 
   @@map("users")
 }
@@ -283,4 +285,51 @@ model UserBadge {
 
   @@unique([userId, badgeId])
   @@map("user_badges")
+}
+
+// ─── PROJECT COLLABORATION ───────────────────────────────────────────────────
+
+model Project {
+  id          String        @id @default(cuid())
+  creatorId   String
+  title       String
+  description String
+  rolesNeeded String[]      
+  techStack   String[]     
+  status      ProjectStatus @default(OPEN)
+  createdAt   DateTime      @default(now())
+
+  creator      User                 @relation(fields: [creatorId], references: [id])
+  applications ProjectApplication[]
+
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
+model ProjectApplication {
+  id        String            @id @default(cuid())
+  projectId String
+  userId    String
+  role      String
+  message   String?
+  status    ApplicationStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@unique([projectId, userId])
+  @@map("project_applications")
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
