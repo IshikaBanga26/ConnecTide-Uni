@@ -11,6 +11,7 @@ type Student = {
   id: string
   user: { id: string }
   name: string
+  avatar?: string | null
   department?: string | null
   year?: number | null
   bio?: string | null

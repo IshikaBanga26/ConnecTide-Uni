@@ -7,6 +7,7 @@ type Student = {
   id: string
   user: { id: string }
   name: string
+  avatar?: string | null
   department?: string | null
   year?: number | null
   bio?: string | null
@@ -87,8 +88,12 @@ export function StudentCard({ student, currentUserId }: Props) {
             backgroundColor: avatarBg, color: avatarText,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontWeight: 800, fontSize: "16px", flexShrink: 0,
+            overflow: "hidden",
           }}>
-            {student.name[0]?.toUpperCase()}
+            {student.avatar
+              ? <img src={student.avatar} alt={student.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              : student.name[0]?.toUpperCase()
+            }
           </div>
           <div style={{ minWidth: 0 }}>
             <Link href={`/students/${student.user.id}`} style={{
