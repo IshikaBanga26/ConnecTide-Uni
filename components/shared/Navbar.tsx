@@ -108,7 +108,7 @@ export function Navbar() {
             <div style={{
               width: "32px", height: "32px", borderRadius: "50%",
               backgroundColor: isProfileActive ? "var(--teal)" : "var(--teal-bg)",
-              border: "1.5px solid rgba(45,212,191,0.35)",
+              border: "1.5px solid rgba(14,165,233,0.35)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontWeight: 700, fontSize: "13px",
               color: isProfileActive ? "var(--bg-primary)" : "var(--teal)",

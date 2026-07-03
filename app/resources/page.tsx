@@ -51,7 +51,7 @@ const FILE_TYPE_COLORS: Record<string, [string, string]> = {
   pdf:   ["#4C0519", "#FB7185"],
   ppt:   ["#1E1B4B", "#818CF8"],
   doc:   ["#0C4A6E", "#38BDF8"],
-  image: ["#134E4A", "#2DD4BF"],
+  image: ["#0C4A6E", "#38BDF8"],
   pyq:   ["#451A03", "#FCD34D"],
 }
 

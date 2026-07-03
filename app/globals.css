@@ -10,22 +10,24 @@
   --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
+
+  /* Single accent: sky blue — used everywhere (buttons, logo, links, focus rings) */
   --accent: #0EA5E9;
   --accent-light: #0C4A6E;
   --accent-hover: #38BDF8;
-  --accent-glow: rgba(14, 165, 233, 0.15);
+  --accent-glow: rgba(14, 165, 233, 0.12);
+  --accent-solid-bg: #0284C7;
+  --accent-solid-hover: #0369A1;
+
   --rose: #F43F5E;
   --rose-light: #4C1130;
   --rose-glow: rgba(244, 63, 94, 0.15);
-  --teal: #2DD4BF;
-  --teal-bg: #134E4A;
-  --teal-text: #5EEAD4;
+  --teal: #0EA5E9;
+  --teal-bg: #0C4A6E;
+  --teal-text: #7DD3FC;
   --violet: #A78BFA;
   --violet-bg: #2E1065;
   --violet-text: #C4B5FD;
-  --amber: #FBBF24;
-  --amber-bg: #451A03;
-  --amber-text: #FCD34D;
   --border: #334155;
   --border-subtle: #1E293B;
   --white: #F1F5F9;
@@ -39,7 +41,7 @@
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -49,9 +51,20 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* Glassmorphism utility */
-.glass {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* Fix native select dropdowns on Windows — dark background + light text */
+select,
+select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Remove default select arrow styling inconsistency */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
 }

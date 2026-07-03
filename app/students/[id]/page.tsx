@@ -39,7 +39,9 @@ export default function StudentProfilePage({ params }: { params: Promise<{ id: s
   if (loading || fetching) {
     return (
       <DashboardLayout>
-        <p className="text-slate-400 text-sm">Loading...</p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "240px" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Loading...</p>
+        </div>
       </DashboardLayout>
     )
   }
@@ -47,7 +49,7 @@ export default function StudentProfilePage({ params }: { params: Promise<{ id: s
   if (!data?.profile) {
     return (
       <DashboardLayout>
-        <p className="text-slate-400 text-sm">Student not found</p>
+        <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Student not found</p>
       </DashboardLayout>
     )
   }
@@ -55,44 +57,85 @@ export default function StudentProfilePage({ params }: { params: Promise<{ id: s
   const p = data.profile
   const status = data.connectionStatus?.status
 
+  const avatarColors: Record<number, [string, string]> = {
+    0: ["#0C4A6E", "#38BDF8"],
+    1: ["#2E1065", "#A78BFA"],
+    2: ["#0284C7", "#7DD3FC"],
+    3: ["#172554", "#60A5FA"],
+    4: ["#1E1B4B", "#818CF8"],
+  }
+  const [avatarBg, avatarText] = avatarColors[(p.name || "?").charCodeAt(0) % 5]
+
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto space-y-5">
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center text-white text-2xl font-bold">
+      <div style={{ maxWidth: "640px", display: "flex", flexDirection: "column", gap: "14px" }}>
+        {/* Header card */}
+        <div style={{
+          backgroundColor: "var(--bg-card)", borderRadius: "14px",
+          border: "1px solid var(--border)", padding: "24px",
+        }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <div style={{
+                width: "56px", height: "56px", borderRadius: "50%",
+                backgroundColor: avatarBg, color: avatarText,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontWeight: 800, fontSize: "22px", flexShrink: 0,
+              }}>
                 {p.name?.[0]?.toUpperCase()}
               </div>
               <div>
-                <h1 className="text-xl font-bold text-slate-100">{p.name}</h1>
-                <p className="text-sm text-slate-400">
+                <h1 style={{ fontSize: "20px", fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>{p.name}</h1>
+                <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>
                   {[p.department, p.year ? `Year ${p.year}` : null, p.college].filter(Boolean).join(" · ")}
                 </p>
               </div>
             </div>
 
             {status === "NONE" && (
-              <button onClick={sendRequest} disabled={connectStatus !== "idle"}
-                className="text-sm px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 disabled:opacity-60">
-                {connectStatus === "sent" ? "✓ Sent" : connectStatus === "loading" ? "..." : "+ Connect"}
+              <button onClick={sendRequest} disabled={connectStatus !== "idle"} style={{
+                padding: "8px 18px", fontSize: "13px", fontWeight: 600,
+                backgroundColor: connectStatus === "sent" ? "var(--accent-light)" : "var(--accent)",
+                color: connectStatus === "sent" ? "var(--accent)" : "var(--bg-primary)",
+                border: "none", borderRadius: "8px",
+                cursor: connectStatus !== "idle" ? "default" : "pointer",
+                fontFamily: "inherit", transition: "background-color 0.15s ease",
+                opacity: connectStatus === "loading" ? 0.6 : 1,
+              }}
+                onMouseEnter={e => { if (connectStatus === "idle") (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent-hover)" }}
+                onMouseLeave={e => { if (connectStatus === "idle") (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent)" }}
+              >
+                {connectStatus === "sent" ? "✓ Sent" : connectStatus === "loading" ? "..." : "Connect"}
               </button>
             )}
             {status === "PENDING" && (
-              <span className="text-sm px-4 py-2 bg-amber-900/30 text-amber-400 rounded-lg">Request Pending</span>
+              <span style={{
+                padding: "8px 16px", fontSize: "13px", fontWeight: 500,
+                backgroundColor: "var(--bg-elevated)", color: "var(--text-muted)",
+                borderRadius: "8px",
+              }}>Request Pending</span>
             )}
             {status === "ACCEPTED" && (
-              <span className="text-sm px-4 py-2 bg-stone-100 text-slate-200 rounded-lg">✓ Connected</span>
+              <span style={{
+                padding: "8px 16px", fontSize: "13px", fontWeight: 500,
+                backgroundColor: "var(--accent-light)", color: "var(--accent)",
+                borderRadius: "8px",
+              }}>✓ Connected</span>
             )}
           </div>
 
-          {p.bio && <p className="mt-4 text-sm text-slate-300 leading-relaxed">{p.bio}</p>}
+          {p.bio && (
+            <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.7, marginTop: "16px" }}>{p.bio}</p>
+          )}
         </div>
 
         {p.skills?.length > 0 && (
-          <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6">
-            <h2 className="font-semibold text-slate-100 mb-3">Skills</h2>
-            <div className="flex flex-wrap gap-2">
+          <div style={{
+            backgroundColor: "var(--bg-card)", borderRadius: "14px",
+            border: "1px solid var(--border)", padding: "20px",
+          }}>
+            <p style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.08em", marginBottom: "12px" }}>SKILLS</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
               {p.skills.map((s: any) => (
                 <SkillTag key={s.skill.name} name={s.skill.name} level={s.level} />
               ))}
@@ -101,9 +144,12 @@ export default function StudentProfilePage({ params }: { params: Promise<{ id: s
         )}
 
         {p.wantToLearn?.length > 0 && (
-          <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6">
-            <h2 className="font-semibold text-slate-100 mb-3">Wants to Learn</h2>
-            <div className="flex flex-wrap gap-2">
+          <div style={{
+            backgroundColor: "var(--bg-card)", borderRadius: "14px",
+            border: "1px solid var(--border)", padding: "20px",
+          }}>
+            <p style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.08em", marginBottom: "12px" }}>WANTS TO LEARN</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
               {p.wantToLearn.map((s: any) => (
                 <SkillTag key={s.skill.name} name={s.skill.name} variant="learn" />
               ))}

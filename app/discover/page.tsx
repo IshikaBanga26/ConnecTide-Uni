@@ -273,7 +273,10 @@ export default function DiscoverPage() {
                 border: "1px solid var(--border)", borderRadius: "10px",
                 cursor: page === 1 ? "not-allowed" : "pointer",
                 fontFamily: "inherit", opacity: page === 1 ? 0.4 : 1,
+                transition: "all 0.15s ease",
               }}
+              onMouseEnter={e => { if (page !== 1) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-elevated)" }}
+              onMouseLeave={e => { if (page !== 1) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-secondary)" }}
             >
               ← Prev
             </button>
@@ -289,7 +292,10 @@ export default function DiscoverPage() {
                 border: "1px solid var(--border)", borderRadius: "10px",
                 cursor: page === pages ? "not-allowed" : "pointer",
                 fontFamily: "inherit", opacity: page === pages ? 0.4 : 1,
+                transition: "all 0.15s ease",
               }}
+              onMouseEnter={e => { if (page !== pages) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-elevated)" }}
+              onMouseLeave={e => { if (page !== pages) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-secondary)" }}
             >
               Next →
             </button>

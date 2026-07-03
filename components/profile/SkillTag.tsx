@@ -8,7 +8,7 @@ type Props = {
 export function SkillTag({ name, level, onRemove, variant = "skill" }: Props) {
   // Skill = teal family, Learn = violet family — from existing CSS variables
   const s = variant === "skill"
-    ? { bg: "var(--teal-bg)", color: "var(--teal-text)", border: "rgba(45,212,191,0.2)" }
+    ? { bg: "var(--teal-bg)", color: "var(--teal-text)", border: "rgba(14,165,233,0.2)" }
     : { bg: "var(--violet-bg)", color: "var(--violet-text)", border: "rgba(167,139,250,0.2)" }
 
   return (

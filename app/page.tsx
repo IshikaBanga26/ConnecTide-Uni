@@ -10,152 +10,124 @@ export default async function Home() {
     <main style={{
       minHeight: "100vh",
       backgroundColor: "var(--bg-primary)",
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
       position: "relative",
-      overflow: "hidden",
     }}>
-      {/* Ambient glow effects */}
-      <div style={{
-        position: "absolute", top: "-120px", left: "-80px",
-        width: "400px", height: "400px",
-        background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)",
-        borderRadius: "50%", pointerEvents: "none",
-      }} />
-      <div style={{
-        position: "absolute", top: "200px", right: "-100px",
-        width: "350px", height: "350px",
-        background: "radial-gradient(circle, rgba(244,63,94,0.1) 0%, transparent 70%)",
-        borderRadius: "50%", pointerEvents: "none",
-      }} />
-
       {/* Nav */}
       <nav style={{
         padding: "0 24px",
-        height: "60px",
+        height: "64px",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        maxWidth: "1152px",
+        maxWidth: "1100px",
         margin: "0 auto",
-        position: "relative",
-        zIndex: 10,
+        borderBottom: "1px solid var(--border)",
       }}>
-        <span style={{ fontWeight: 800, fontSize: "18px", color: "var(--accent)" }}>
-          ConnecTide
+        <span style={{ fontWeight: 800, fontSize: "17px", letterSpacing: "-0.4px", color: "var(--text-primary)" }}>
+          <span style={{ color: "var(--accent)" }}>C</span>onnec<span style={{ color: "var(--accent)" }}>T</span>ide
         </span>
-        <div style={{ display: "flex", gap: "12px" }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <Link href="/login" style={{
             fontSize: "14px", fontWeight: 500, color: "var(--text-secondary)",
             textDecoration: "none", padding: "8px 16px",
-            border: "1px solid var(--border)", borderRadius: "20px",
-            backgroundColor: "var(--bg-secondary)",
-            transition: "all 0.2s ease",
           }}>Sign in</Link>
           <Link href="/register" style={{
             fontSize: "14px", fontWeight: 600, color: "var(--bg-primary)",
-            textDecoration: "none", padding: "8px 16px",
-            backgroundColor: "var(--accent)", borderRadius: "20px",
-            transition: "all 0.2s ease",
+            textDecoration: "none", padding: "8px 20px",
+            backgroundColor: "var(--accent)", borderRadius: "8px",
           }}>Get Started</Link>
         </div>
       </nav>
 
       {/* Hero */}
       <div style={{
-        maxWidth: "720px",
+        maxWidth: "640px",
         margin: "0 auto",
-        padding: "80px 24px 60px",
+        padding: "100px 24px 80px",
         textAlign: "center",
-        position: "relative",
-        zIndex: 10,
       }}>
-        <div style={{
-          display: "inline-block",
-          backgroundColor: "var(--accent-glow)",
-          color: "var(--accent)",
+        <p style={{
           fontSize: "13px",
           fontWeight: 600,
-          padding: "6px 16px",
-          borderRadius: "20px",
-          marginBottom: "24px",
-          border: "1px solid rgba(14,165,233,0.2)",
+          color: "var(--accent)",
+          marginBottom: "20px",
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
         }}>
-          Built for students, by students
-        </div>
+          For students, by students
+        </p>
 
         <h1 style={{
-          fontSize: "clamp(36px, 6vw, 60px)",
+          fontSize: "clamp(32px, 5vw, 52px)",
           fontWeight: 800,
           color: "var(--text-primary)",
-          lineHeight: 1.1,
+          lineHeight: 1.15,
           letterSpacing: "-1px",
           marginBottom: "20px",
         }}>
-          Find your perfect<br />
-          <span style={{
-            background: "linear-gradient(135deg, #0EA5E9, #38BDF8, #2DD4BF)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}>study partner</span>
+          Find your next study partner
         </h1>
 
         <p style={{
-          fontSize: "17px",
+          fontSize: "16px",
           color: "var(--text-secondary)",
           lineHeight: 1.7,
           marginBottom: "36px",
-          fontWeight: 400,
+          maxWidth: "480px",
+          margin: "0 auto 36px",
         }}>
-          ConnecTide connects students who want to exchange skills, form study groups,
-          share resources, and collaborate on projects — all in one place.
+          Exchange skills, form study groups, share resources, and
+          collaborate on projects with students in your college.
         </p>
 
         <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/register" style={{
-            fontSize: "15px", fontWeight: 700, color: "var(--bg-primary)",
-            textDecoration: "none", padding: "14px 28px",
-            background: "linear-gradient(135deg, #0EA5E9, #38BDF8)",
-            borderRadius: "24px",
-            boxShadow: "0 4px 20px rgba(14,165,233,0.35)",
-            transition: "all 0.2s ease",
+            fontSize: "15px", fontWeight: 600, color: "var(--bg-primary)",
+            textDecoration: "none", padding: "12px 28px",
+            backgroundColor: "var(--accent)",
+            borderRadius: "8px",
           }}>
-            Join ConnecTide →
+            Join ConnecTide
           </Link>
           <Link href="/login" style={{
-            fontSize: "15px", fontWeight: 600, color: "var(--text-primary)",
-            textDecoration: "none", padding: "14px 28px",
-            backgroundColor: "var(--bg-secondary)", borderRadius: "24px",
+            fontSize: "15px", fontWeight: 500, color: "var(--text-secondary)",
+            textDecoration: "none", padding: "12px 28px",
+            backgroundColor: "var(--bg-secondary)", borderRadius: "8px",
             border: "1px solid var(--border)",
-            transition: "all 0.2s ease",
           }}>
             Sign in
           </Link>
         </div>
       </div>
 
-      {/* Feature pills */}
+      {/* Features — simple list, no pills */}
       <div style={{
-        display: "flex", gap: "12px", justifyContent: "center",
-        flexWrap: "wrap", padding: "0 24px 80px",
-        position: "relative", zIndex: 10,
+        maxWidth: "640px",
+        margin: "0 auto",
+        padding: "0 24px 80px",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gap: "16px",
       }}>
         {[
-          { icon: "🔍", text: "Discover peers by skill" },
-          { icon: "🤝", text: "Skill exchange marketplace" },
-          { icon: "📚", text: "Study buddy finder" },
-          { icon: "📁", text: "Resource sharing hub" },
-          { icon: "🚀", text: "Project collaboration" },
-          { icon: "🤖", text: "AI team builder" },
+          { title: "Discover", desc: "Find peers by skill or course" },
+          { title: "Exchange", desc: "Trade skills with other students" },
+          { title: "Study Groups", desc: "Form groups around topics" },
+          { title: "Resources", desc: "Share notes and materials" },
+          { title: "Projects", desc: "Collaborate on real work" },
         ].map((f) => (
-          <div key={f.text} style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            backgroundColor: "var(--bg-secondary)", border: "1px solid var(--border)",
-            borderRadius: "20px", padding: "8px 16px",
-            fontSize: "13px", fontWeight: 500, color: "var(--text-secondary)",
-            transition: "all 0.2s ease",
+          <div key={f.title} style={{
+            padding: "16px",
+            backgroundColor: "var(--bg-secondary)",
+            border: "1px solid var(--border)",
+            borderRadius: "10px",
           }}>
-            <span>{f.icon}</span> {f.text}
+            <p style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "4px" }}>
+              {f.title}
+            </p>
+            <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: 1.5 }}>
+              {f.desc}
+            </p>
           </div>
         ))}
       </div>

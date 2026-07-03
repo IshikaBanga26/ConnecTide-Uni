@@ -39,7 +39,7 @@ const STATUS_COLORS: Record<string, [string, string]> = {
 function avatarColor(name: string): [string, string] {
   const palette: [string, string][] = [
     ["#0C4A6E", "#38BDF8"], ["#2E1065", "#A78BFA"],
-    ["#134E4A", "#2DD4BF"], ["#172554", "#60A5FA"], ["#1E1B4B", "#818CF8"],
+    ["#0284C7", "#7DD3FC"], ["#172554", "#60A5FA"], ["#1E1B4B", "#818CF8"],
   ]
   return palette[name.charCodeAt(0) % palette.length]
 }

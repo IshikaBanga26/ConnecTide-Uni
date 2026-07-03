@@ -36,71 +36,88 @@ export default function ConnectionsPage() {
 
   const handleResponded = (connectionId: string) => {
     setPending((prev) => prev.filter((p) => p.id !== connectionId))
-    loadData() // refresh connections list too
+    loadData()
   }
 
   if (loading) return (
     <DashboardLayout>
-      <div className="flex items-center justify-center h-64">
-        <p className="text-slate-400 text-sm">Loading...</p>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "240px" }}>
+        <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Loading...</p>
       </div>
     </DashboardLayout>
   )
 
+  const tabStyle = (isActive: boolean): React.CSSProperties => ({
+    padding: "7px 16px",
+    fontSize: "13px",
+    fontWeight: isActive ? 600 : 500,
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontFamily: "inherit",
+    border: "none",
+    transition: "all 0.15s ease",
+    backgroundColor: isActive ? "var(--accent-light)" : "transparent",
+    color: isActive ? "var(--accent)" : "var(--text-muted)",
+    position: "relative" as const,
+  })
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Connections</h1>
-          <p className="text-slate-400 text-sm mt-1">Manage your network</p>
+          <h1 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.4px" }}>
+            Connections
+          </h1>
+          <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "4px" }}>Manage your network</p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-stone-100 rounded-xl p-1 w-fit">
-          <button
-            onClick={() => setTab("connections")}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              tab === "connections" ? "bg-slate-800 text-slate-100 shadow-sm " : "text-slate-400"
-            }`}
-          >
+        <div style={{
+          display: "flex", gap: "4px",
+          backgroundColor: "var(--bg-secondary)",
+          border: "1px solid var(--border)",
+          borderRadius: "10px", padding: "4px", width: "fit-content",
+        }}>
+          <button onClick={() => setTab("connections")} style={tabStyle(tab === "connections")}>
             My Connections ({connections.length})
           </button>
-          <button
-            onClick={() => setTab("pending")}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors relative ${
-              tab === "pending" ? "bg-slate-800 text-slate-100 shadow-sm " : "text-slate-400"
-            }`}
-          >
-            Pending Requests ({pending.length})
+          <button onClick={() => setTab("pending")} style={tabStyle(tab === "pending")}>
+            <span>Pending ({pending.length})</span>
             {pending.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full" />
+              <span style={{
+                position: "absolute", top: "-2px", right: "-2px",
+                width: "7px", height: "7px",
+                backgroundColor: "var(--rose)", borderRadius: "50%",
+              }} />
             )}
           </button>
         </div>
 
         {fetching ? (
-          <p className="text-slate-400 text-sm">Loading...</p>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Loading...</p>
         ) : tab === "connections" ? (
           connections.length === 0 ? (
-            <div className="text-center py-16 text-slate-400">
-              <p className="text-4xl mb-3">🤝</p>
-              <p className="font-medium text-slate-400">No connections yet</p>
-              <p className="text-sm mt-1">Go to Discover to find and connect with peers</p>
+            <div style={{ textAlign: "center", padding: "64px 24px", color: "var(--text-muted)" }}>
+              <p style={{ fontWeight: 600, fontSize: "15px", color: "var(--text-secondary)", marginBottom: "6px" }}>
+                No connections yet
+              </p>
+              <p style={{ fontSize: "13px" }}>Go to Discover to find and connect with peers</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "12px" }}>
               {connections.map((c) => (
                 <ConnectionCard key={c.connectionId} connection={c} />
               ))}
             </div>
           )
         ) : pending.length === 0 ? (
-          <div className="text-center py-16 text-slate-400">
-            <p className="text-4xl mb-3">📭</p>
-            <p className="font-medium text-slate-400">No pending requests</p>
+          <div style={{ textAlign: "center", padding: "64px 24px", color: "var(--text-muted)" }}>
+            <p style={{ fontWeight: 600, fontSize: "15px", color: "var(--text-secondary)", marginBottom: "6px" }}>
+              No pending requests
+            </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {pending.map((req) => (
               <ConnectionRequestCard key={req.id} request={req} onResponded={handleResponded} />
             ))}

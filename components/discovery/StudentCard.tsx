@@ -24,7 +24,7 @@ function avatarColor(name: string): [string, string] {
   const palette: [string, string][] = [
     ["#0C4A6E", "#38BDF8"], // sky
     ["#2E1065", "#A78BFA"], // violet
-    ["#134E4A", "#2DD4BF"], // teal
+    ["#0284C7", "#7DD3FC"], // sky blue
     ["#172554", "#60A5FA"], // blue
     ["#1E1B4B", "#818CF8"], // indigo
   ]
@@ -121,7 +121,7 @@ export function StudentCard({ student, currentUserId }: Props) {
             cursor: status !== "idle" ? "default" : "pointer",
             transition: "all 0.15s ease", border: "1px solid",
             ...(status === "sent"
-              ? { backgroundColor: "var(--teal-bg)", color: "var(--teal-text)", borderColor: "rgba(45,212,191,0.25)" }
+              ? { backgroundColor: "var(--teal-bg)", color: "var(--teal-text)", borderColor: "rgba(14,165,233,0.25)" }
               : status === "loading"
               ? { backgroundColor: "transparent", color: "var(--text-muted)", borderColor: "var(--border)" }
               : { backgroundColor: "var(--accent-light)", color: "var(--accent)", borderColor: "rgba(14,165,233,0.3)" }

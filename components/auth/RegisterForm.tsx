@@ -29,79 +29,60 @@ export function RegisterForm() {
     }
   }
 
-  const inputStyle = {
+  const inputStyle: React.CSSProperties = {
     width: "100%", padding: "10px 14px",
-    border: "1px solid var(--border)", borderRadius: "12px",
+    border: "1px solid var(--border)", borderRadius: "8px",
     fontSize: "14px", fontFamily: "inherit",
     backgroundColor: "var(--bg-input)", color: "var(--text-primary)",
-    outline: "none", transition: "border 0.15s ease",
+    outline: "none", transition: "border-color 0.15s ease",
   }
 
   return (
     <div style={{
       minHeight: "100vh", backgroundColor: "var(--bg-primary)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: "24px",
-      position: "relative", overflow: "hidden",
     }}>
-      {/* Ambient glow */}
-      <div style={{
-        position: "absolute", top: "-100px", right: "-60px",
-        width: "350px", height: "350px",
-        background: "radial-gradient(circle, rgba(14,165,233,0.1) 0%, transparent 70%)",
-        borderRadius: "50%", pointerEvents: "none",
-      }} />
-      <div style={{
-        position: "absolute", bottom: "-80px", left: "-60px",
-        width: "300px", height: "300px",
-        background: "radial-gradient(circle, rgba(244,63,94,0.08) 0%, transparent 70%)",
-        borderRadius: "50%", pointerEvents: "none",
-      }} />
-
-      <div style={{ width: "100%", maxWidth: "420px", position: "relative", zIndex: 10 }}>
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <Link href="/" style={{ fontWeight: 800, fontSize: "22px", color: "var(--accent)", textDecoration: "none" }}>
-            🌊 ConnecTide
+      <div style={{ width: "100%", maxWidth: "400px" }}>
+        <div style={{ marginBottom: "32px" }}>
+          <Link href="/" style={{ fontWeight: 800, fontSize: "17px", color: "var(--text-primary)", textDecoration: "none", letterSpacing: "-0.4px" }}>
+            <span style={{ color: "var(--accent)" }}>C</span>onnec<span style={{ color: "var(--accent)" }}>T</span>ide
           </Link>
-          <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "6px" }}>
-            Join thousands of students
-          </p>
         </div>
 
         <div style={{
-          backgroundColor: "var(--bg-card)", borderRadius: "24px",
+          backgroundColor: "var(--bg-card)", borderRadius: "12px",
           border: "1px solid var(--border)", padding: "32px",
-          boxShadow: "var(--card-shadow)",
         }}>
-          <h1 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>
+          <h1 style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>
             Create account
           </h1>
-          <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "24px" }}>
-            Free forever. No credit card needed.
+          <p style={{ fontSize: "14px", color: "var(--text-muted)", marginBottom: "24px" }}>
+            Free forever, no credit card.
           </p>
 
           {error && (
             <div style={{
               backgroundColor: "var(--rose-light)", color: "var(--rose)",
               fontSize: "13px", padding: "10px 14px",
-              borderRadius: "10px", marginBottom: "16px",
+              borderRadius: "8px", marginBottom: "16px",
               border: "1px solid rgba(244,63,94,0.2)",
             }}>
-              ⚠️ {error}
+              {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             <div>
-              <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "6px" }}>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
                 Full Name
               </label>
               <input name="name" type="text" required value={form.name} onChange={handleChange}
-                placeholder="Ishika Banga" style={inputStyle}
+                placeholder="Your name" style={inputStyle}
                 onFocus={e => (e.target.style.borderColor = "var(--accent)")}
                 onBlur={e => (e.target.style.borderColor = "var(--border)")} />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "6px" }}>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
                 Email
               </label>
               <input name="email" type="email" required value={form.email} onChange={handleChange}
@@ -110,7 +91,7 @@ export function RegisterForm() {
                 onBlur={e => (e.target.style.borderColor = "var(--border)")} />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "6px" }}>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
                 Password
               </label>
               <input name="password" type="password" required value={form.password} onChange={handleChange}
@@ -120,20 +101,24 @@ export function RegisterForm() {
             </div>
 
             <button type="submit" disabled={loading} style={{
-              width: "100%", padding: "12px",
-              background: loading ? "var(--bg-elevated)" : "linear-gradient(135deg, #0EA5E9, #38BDF8)",
-              color: loading ? "var(--text-muted)" : "var(--bg-primary)", fontWeight: 700, fontSize: "14px",
-              border: "none", borderRadius: "12px", cursor: loading ? "not-allowed" : "pointer",
+              width: "100%", padding: "11px",
+              backgroundColor: loading ? "var(--bg-elevated)" : "var(--accent)",
+              color: loading ? "var(--text-muted)" : "var(--bg-primary)",
+              fontWeight: 600, fontSize: "14px",
+              border: "none", borderRadius: "8px",
+              cursor: loading ? "not-allowed" : "pointer",
               fontFamily: "inherit", marginTop: "4px",
-              boxShadow: loading ? "none" : "0 4px 16px rgba(14,165,233,0.3)",
-              transition: "all 0.2s ease",
-            }}>
-              {loading ? "Creating account..." : "Create Account →"}
+              transition: "background-color 0.15s ease",
+            }}
+              onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent-hover)" }}
+              onMouseLeave={e => { if (!loading) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent)" }}
+            >
+              {loading ? "Creating account..." : "Create Account"}
             </button>
           </form>
         </div>
 
-        <p style={{ textAlign: "center", fontSize: "13px", color: "var(--text-muted)", marginTop: "20px" }}>
+        <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "20px" }}>
           Already have an account?{" "}
           <Link href="/login" style={{ color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}>
             Sign in

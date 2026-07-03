@@ -145,7 +145,7 @@ export function Sidebar() {
           <div style={{
             width: "30px", height: "30px", borderRadius: "50%",
             backgroundColor: isProfileActive ? "var(--teal)" : "var(--teal-bg)",
-            border: "1.5px solid rgba(45,212,191,0.35)",
+            border: "1.5px solid rgba(14,165,233,0.35)",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontWeight: 700, fontSize: "12px",
             color: isProfileActive ? "var(--bg-primary)" : "var(--teal)",

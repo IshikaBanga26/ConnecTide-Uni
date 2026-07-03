@@ -38,7 +38,7 @@ function avatarColor(name: string): [string, string] {
   const palette: [string, string][] = [
     ["#0C4A6E", "#38BDF8"],
     ["#2E1065", "#A78BFA"],
-    ["#134E4A", "#2DD4BF"],
+    ["#0284C7", "#7DD3FC"],
     ["#172554", "#60A5FA"],
     ["#1E1B4B", "#818CF8"],
   ]
@@ -426,7 +426,7 @@ function MatchCard({ match }: { match: Match }) {
               <span key={s} style={{
                 fontSize: "12px", fontWeight: 500,
                 backgroundColor: "var(--teal-bg)", color: "var(--teal-text)",
-                border: "1px solid rgba(45,212,191,0.2)",
+                border: "1px solid rgba(14,165,233,0.2)",
                 padding: "3px 10px", borderRadius: "8px",
               }}>
                 {s}

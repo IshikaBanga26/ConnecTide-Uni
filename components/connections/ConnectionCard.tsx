@@ -19,7 +19,7 @@ function avatarColor(name: string) {
   const colors = [
     ["#0C4A6E", "#38BDF8"], // Sky
     ["#2E1065", "#A78BFA"], // Violet
-    ["#134E4A", "#2DD4BF"], // Teal
+    ["#0284C7", "#7DD3FC"], // Sky Blue
     ["#4C1130", "#FB7185"], // Rose
     ["#172554", "#60A5FA"], // Blue
   ]

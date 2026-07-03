@@ -209,13 +209,19 @@ export default function ProfilePage() {
               </div>
             </div>
             <button onClick={() => setEditing(true)} style={{
-              padding: "7px 16px", borderRadius: "10px", fontSize: "13px", fontWeight: 600,
+              padding: "7px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: 600,
               color: "var(--text-secondary)", backgroundColor: "transparent",
               border: "1px solid var(--border)", cursor: "pointer", fontFamily: "inherit",
               flexShrink: 0, transition: "all 0.15s ease",
             }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-elevated)"}
-              onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-elevated)"
+                ;(e.currentTarget as HTMLElement).style.color = "var(--text-primary)"
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"
+                ;(e.currentTarget as HTMLElement).style.color = "var(--text-secondary)"
+              }}
             >
               Edit
             </button>
@@ -298,9 +304,13 @@ export default function ProfilePage() {
             </p>
             <button onClick={() => setEditing(true)} style={{
               padding: "9px 20px", backgroundColor: "var(--accent)", color: "var(--bg-primary)",
-              border: "none", borderRadius: "10px", fontSize: "13px", fontWeight: 700,
+              border: "none", borderRadius: "8px", fontSize: "13px", fontWeight: 600,
               cursor: "pointer", fontFamily: "inherit",
-            }}>
+              transition: "background-color 0.15s ease",
+            }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent-hover)"}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent)"}
+            >
               Complete Profile
             </button>
           </div>
