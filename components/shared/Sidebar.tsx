@@ -10,10 +10,10 @@ const navItems = [
   { href: "/resources",   label: "Resources",   icon: "doc" },
   { href: "/projects",    label: "Projects",    icon: "layers" },
   { href: "/connections", label: "Connections", icon: "people" },
+  { href: "/chat",        label: "Messages",    icon: "chat" },
   { href: "/badges",      label: "Badges",      icon: "star" },
 ]
 
-// Minimal stroke icons
 function Icon({ name }: { name: string }) {
   const common = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }
   switch (name) {
@@ -22,6 +22,7 @@ function Icon({ name }: { name: string }) {
     case "doc":     return <svg {...common}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6" /></svg>
     case "layers":  return <svg {...common}><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
     case "people":  return <svg {...common}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>
+    case "chat":    return <svg {...common}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
     case "star":    return <svg {...common}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
     default: return null
   }
@@ -35,10 +36,7 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  const handleLogout = async () => {
-    await logout()
-    router.push("/login")
-  }
+  const handleLogout = async () => { await logout(); router.push("/login") }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -55,19 +53,13 @@ export function Sidebar() {
 
   return (
     <aside style={{
-      width: collapsed ? "72px" : "224px",
-      flexShrink: 0,
-      height: "100vh",
-      position: "sticky",
-      top: 0,
-      backgroundColor: "var(--bg-secondary)",
-      borderRight: "1px solid var(--border)",
-      display: "flex",
-      flexDirection: "column",
-      transition: "width 0.2s ease",
-      zIndex: 40,
+      width: collapsed ? "72px" : "224px", flexShrink: 0,
+      height: "100vh", position: "sticky", top: 0,
+      backgroundColor: "var(--bg-secondary)", borderRight: "1px solid var(--border)",
+      display: "flex", flexDirection: "column",
+      transition: "width 0.2s ease", zIndex: 40,
     }}>
-      {/* Wordmark + collapse toggle */}
+      {/* Wordmark + collapse */}
       <div style={{
         height: "58px", display: "flex", alignItems: "center",
         justifyContent: collapsed ? "center" : "space-between",
@@ -77,21 +69,17 @@ export function Sidebar() {
         {!collapsed && (
           <Link href="/discover" style={{ textDecoration: "none" }}>
             <span style={{ fontWeight: 800, fontSize: "16px", letterSpacing: "-0.4px", color: "var(--text-primary)" }}>
-              <span style={{ color: "var(--teal)" }}>C</span>onnec
-              <span style={{ color: "var(--teal)" }}>T</span>ide
+              <span style={{ color: "var(--teal)" }}>C</span>onnec<span style={{ color: "var(--teal)" }}>T</span>ide
             </span>
           </Link>
         )}
-        <button
-          onClick={() => setCollapsed(prev => !prev)}
-          style={{
-            width: "26px", height: "26px", borderRadius: "8px",
-            border: "1px solid var(--border)", backgroundColor: "transparent",
-            color: "var(--text-muted)", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "12px", flexShrink: 0,
-            transition: "all 0.15s ease",
-          }}
+        <button onClick={() => setCollapsed(prev => !prev)} style={{
+          width: "26px", height: "26px", borderRadius: "8px",
+          border: "1px solid var(--border)", backgroundColor: "transparent",
+          color: "var(--text-muted)", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "12px", flexShrink: 0, transition: "all 0.15s ease",
+        }}
           onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"}
           onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"}
         >
@@ -99,26 +87,21 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Nav items */}
+      {/* Nav */}
       <nav style={{ flex: 1, padding: "12px 10px", display: "flex", flexDirection: "column", gap: "2px" }}>
         {navItems.map(item => {
           const isActive = pathname === item.href
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={collapsed ? item.label : undefined}
-              style={{
-                display: "flex", alignItems: "center", gap: "12px",
-                padding: collapsed ? "10px" : "9px 12px",
-                justifyContent: collapsed ? "center" : "flex-start",
-                borderRadius: "10px",
-                fontSize: "13px", fontWeight: isActive ? 600 : 500,
-                color: isActive ? "var(--accent)" : "var(--text-secondary)",
-                backgroundColor: isActive ? "var(--accent-light)" : "transparent",
-                textDecoration: "none",
-                transition: "all 0.15s ease",
-              }}
+            <Link key={item.href} href={item.href} title={collapsed ? item.label : undefined} style={{
+              display: "flex", alignItems: "center", gap: "12px",
+              padding: collapsed ? "10px" : "9px 12px",
+              justifyContent: collapsed ? "center" : "flex-start",
+              borderRadius: "10px", fontSize: "13px",
+              fontWeight: isActive ? 600 : 500,
+              color: isActive ? "var(--accent)" : "var(--text-secondary)",
+              backgroundColor: isActive ? "var(--accent-light)" : "transparent",
+              textDecoration: "none", transition: "all 0.15s ease",
+            }}
               onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-elevated)" }}
               onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent" }}
             >
@@ -129,31 +112,29 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* User section at bottom */}
+      {/* User section */}
       <div ref={menuRef} style={{ position: "relative", padding: "12px 10px", borderTop: "1px solid var(--border)" }}>
-        <button
-          onClick={() => setMenuOpen(prev => !prev)}
-          style={{
-            display: "flex", alignItems: "center", gap: "10px", width: "100%",
-            background: "none", border: "none", cursor: "pointer",
-            padding: "6px", borderRadius: "10px",
-            justifyContent: collapsed ? "center" : "flex-start",
-            backgroundColor: menuOpen ? "var(--bg-elevated)" : "transparent",
-            transition: "background-color 0.15s ease",
-          }}
-        >
+        <button onClick={() => setMenuOpen(prev => !prev)} style={{
+          display: "flex", alignItems: "center", gap: "10px", width: "100%",
+          background: "none", border: "none", cursor: "pointer",
+          padding: "6px", borderRadius: "10px",
+          justifyContent: collapsed ? "center" : "flex-start",
+          backgroundColor: menuOpen ? "var(--bg-elevated)" : "transparent",
+          transition: "background-color 0.15s ease",
+        }}>
           <div style={{
             width: "30px", height: "30px", borderRadius: "50%",
             backgroundColor: isProfileActive ? "var(--teal)" : "var(--teal-bg)",
-            border: "1.5px solid rgba(14,165,233,0.35)",
+            border: "1.5px solid rgba(45,212,191,0.35)",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontWeight: 700, fontSize: "12px",
             color: isProfileActive ? "var(--bg-primary)" : "var(--teal)",
             flexShrink: 0, overflow: "hidden",
           }}>
-            {user.profile?.avatar ? (
-              <img src={user.profile.avatar} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            ) : initial}
+            {user.profile?.avatar
+              ? <img src={user.profile.avatar} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              : initial
+            }
           </div>
           {!collapsed && (
             <div style={{ textAlign: "left", overflow: "hidden" }}>
@@ -165,10 +146,9 @@ export function Sidebar() {
           )}
         </button>
 
-        {/* Dropdown — opens upward since this is at the bottom of screen */}
         {menuOpen && (
           <div style={{
-            position: "absolute", bottom: "calc(100% + 8px)", left: collapsed ? "10px" : "10px",
+            position: "absolute", bottom: "calc(100% + 8px)", left: "10px",
             backgroundColor: "var(--bg-card)", border: "1px solid var(--border)",
             borderRadius: "14px", minWidth: "190px",
             boxShadow: "0 12px 32px rgba(0,0,0,0.4)",
@@ -182,11 +162,9 @@ export function Sidebar() {
                 {user.email}
               </p>
             </div>
-
             <Link href="/profile" onClick={() => setMenuOpen(false)} style={{
               display: "flex", alignItems: "center", gap: "8px",
-              padding: "8px 10px", borderRadius: "8px",
-              fontSize: "13px", fontWeight: 500,
+              padding: "8px 10px", borderRadius: "8px", fontSize: "13px", fontWeight: 500,
               color: isProfileActive ? "var(--teal)" : "var(--text-secondary)",
               backgroundColor: isProfileActive ? "var(--teal-bg)" : "transparent",
               textDecoration: "none", transition: "background-color 0.15s ease",
@@ -196,13 +174,12 @@ export function Sidebar() {
             >
               Profile
             </Link>
-
             <button onClick={() => { setMenuOpen(false); handleLogout() }} style={{
               display: "flex", alignItems: "center", gap: "8px", width: "100%",
-              padding: "8px 10px", borderRadius: "8px",
-              fontSize: "13px", fontWeight: 500, color: "var(--text-secondary)",
-              backgroundColor: "transparent", border: "none", cursor: "pointer",
-              fontFamily: "inherit", textAlign: "left", transition: "all 0.15s ease",
+              padding: "8px 10px", borderRadius: "8px", fontSize: "13px", fontWeight: 500,
+              color: "var(--text-secondary)", backgroundColor: "transparent",
+              border: "none", cursor: "pointer", fontFamily: "inherit", textAlign: "left",
+              transition: "all 0.15s ease",
             }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLElement).style.backgroundColor = "var(--rose-light)"

@@ -6,7 +6,7 @@ type User = {
   email: string
   profile: {
     name: string
-    avatar?: string
+    avatar?: string | null
     department?: string
     year?: number
   } | null
@@ -21,21 +21,16 @@ type AuthContextType = {
   refreshUser: () => Promise<void>
 }
 
-// We export the context so layout.tsx can provide it
 export const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-  login: async () => {},
-  register: async () => {},
-  logout: async () => {},
-  refreshUser: async () => {},
+  user: null, loading: true,
+  login: async () => {}, register: async () => {},
+  logout: async () => {}, refreshUser: async () => {},
 })
 
 export function useAuth() {
   return useContext(AuthContext)
 }
 
-// Hook that provides the auth state — use this in AuthProvider
 export function useAuthProvider(): AuthContextType {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -56,9 +51,7 @@ export function useAuthProvider(): AuthContextType {
     }
   }
 
-  useEffect(() => {
-    refreshUser()
-  }, [])
+  useEffect(() => { refreshUser() }, [])
 
   const login = async (email: string, password: string) => {
     const res = await fetch("/api/auth/login", {
@@ -68,6 +61,8 @@ export function useAuthProvider(): AuthContextType {
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error)
+    // Store token in localStorage for Socket.IO auth
+    if (data.data.token) localStorage.setItem("ct_token", data.data.token)
     setUser(data.data.user)
   }
 
@@ -79,11 +74,13 @@ export function useAuthProvider(): AuthContextType {
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error)
+    if (data.data.token) localStorage.setItem("ct_token", data.data.token)
     setUser(data.data.user)
   }
 
   const logout = async () => {
     await fetch("/api/auth/logout", { method: "POST" })
+    localStorage.removeItem("ct_token")
     setUser(null)
   }
 
