@@ -215,27 +215,34 @@ export default function DiscoverPage() {
         {/* Results grid */}
         {fetching ? (
           // Skeleton loader
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {[...Array(6)].map((_, i) => (
               <div key={i} style={{
                 backgroundColor: "var(--bg-card)",
                 borderRadius: "16px",
                 border: "1px solid var(--border)",
                 padding: "20px",
-                display: "flex", flexDirection: "column", gap: "12px",
+                display: "flex", flexDirection: "row", gap: "20px",
+                alignItems: "center",
               }}>
-                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                  <div style={{ width: "42px", height: "42px", borderRadius: "12px", backgroundColor: "var(--bg-elevated)" }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ height: "13px", width: "60%", backgroundColor: "var(--bg-elevated)", borderRadius: "6px", marginBottom: "8px" }} />
-                    <div style={{ height: "10px", width: "40%", backgroundColor: "var(--bg-elevated)", borderRadius: "6px" }} />
+                {/* Avatar skeleton */}
+                <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "var(--bg-elevated)", flexShrink: 0 }} />
+                
+                {/* Info skeleton */}
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <div style={{ height: "16px", width: "30%", backgroundColor: "var(--bg-elevated)", borderRadius: "6px" }} />
+                  <div style={{ height: "12px", width: "50%", backgroundColor: "var(--bg-elevated)", borderRadius: "6px" }} />
+                  <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+                    {[60, 50, 70].map((w, j) => (
+                      <div key={j} style={{ height: "22px", width: `${w}px`, backgroundColor: "var(--bg-elevated)", borderRadius: "6px" }} />
+                    ))}
                   </div>
                 </div>
-                <div style={{ height: "1px", backgroundColor: "var(--border-subtle)" }} />
-                <div style={{ display: "flex", gap: "6px" }}>
-                  {[50, 70, 55].map((w, j) => (
-                    <div key={j} style={{ height: "24px", width: `${w}px`, backgroundColor: "var(--bg-elevated)", borderRadius: "8px" }} />
-                  ))}
+
+                {/* Buttons skeleton */}
+                <div style={{ display: "flex", gap: "12px", flexShrink: 0 }}>
+                  <div style={{ width: "100px", height: "36px", backgroundColor: "var(--bg-elevated)", borderRadius: "10px" }} />
+                  <div style={{ width: "100px", height: "36px", backgroundColor: "var(--bg-elevated)", borderRadius: "10px" }} />
                 </div>
               </div>
             ))}
@@ -254,7 +261,7 @@ export default function DiscoverPage() {
             </p>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {students.map(student => (
               <StudentCard key={student.id} student={student} currentUserId={user?.id ?? ""} />
             ))}

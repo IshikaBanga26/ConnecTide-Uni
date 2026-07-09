@@ -11,32 +11,20 @@ type CreateProjectInput = {
 export const projectService = {
   async createProject(creatorId: string, input: CreateProjectInput) {
     const { title, description, rolesNeeded, techStack } = input
-
     if (!title.trim()) throw new Error("Title is required")
     if (!description.trim()) throw new Error("Description is required")
     if (rolesNeeded.length === 0) throw new Error("At least one role is required")
 
     return prisma.project.create({
-      data: {
-        creatorId,
-        title: title.trim(),
-        description: description.trim(),
-        rolesNeeded,
-        techStack,
-      },
+      data: { creatorId, title: title.trim(), description: description.trim(), rolesNeeded, techStack },
       include: {
-        creator: { select: { id: true, profile: { select: { name: true } } } },
+        creator: { select: { id: true, profile: { select: { name: true, avatar: true } } } },
         applications: true,
       },
     })
   },
 
-  async getProjects(filters: {
-    status?: string
-    techStack?: string
-    page?: number
-    limit?: number
-  }) {
+  async getProjects(filters: { status?: string; techStack?: string; page?: number; limit?: number }) {
     const { status, techStack, page = 1, limit = 12 } = filters
     const skip = (page - 1) * limit
 
@@ -49,7 +37,8 @@ export const projectService = {
       prisma.project.findMany({
         where,
         include: {
-          creator: { select: { id: true, profile: { select: { name: true, department: true } } } },
+          // avatar is now included — this was the missing field
+          creator: { select: { id: true, profile: { select: { name: true, avatar: true, department: true } } } },
           applications: { select: { id: true, role: true, status: true, userId: true } },
         },
         orderBy: { createdAt: "desc" },
@@ -66,10 +55,10 @@ export const projectService = {
     return prisma.project.findUnique({
       where: { id },
       include: {
-        creator: { select: { id: true, profile: { select: { name: true, department: true, year: true } } } },
+        creator: { select: { id: true, profile: { select: { name: true, avatar: true, department: true, year: true } } } },
         applications: {
           include: {
-            user: { select: { id: true, profile: { select: { name: true, department: true, year: true } } } },
+            user: { select: { id: true, profile: { select: { name: true, avatar: true, department: true, year: true } } } },
           },
           orderBy: { createdAt: "desc" },
         },
@@ -84,7 +73,6 @@ export const projectService = {
     if (project.status !== "OPEN") throw new Error("This project is no longer accepting applications")
     if (!project.rolesNeeded.includes(role)) throw new Error("Invalid role for this project")
 
-    // Check if already applied
     const existing = await prisma.projectApplication.findUnique({
       where: { projectId_userId: { projectId, userId } },
     })
@@ -92,7 +80,7 @@ export const projectService = {
 
     return prisma.projectApplication.create({
       data: { projectId, userId, role, message },
-      include: { user: { select: { id: true, profile: { select: { name: true } } } } },
+      include: { user: { select: { id: true, profile: { select: { name: true, avatar: true } } } } },
     })
   },
 
@@ -110,7 +98,6 @@ export const projectService = {
       data: { status: accept ? "ACCEPTED" : "REJECTED" },
     })
 
-    // Reputation boost for collaboration when accepted
     if (accept) {
       reputationService.recalculate(application.userId).catch(console.error)
       reputationService.recalculate(creatorId).catch(console.error)
@@ -134,7 +121,7 @@ export const projectService = {
         project: {
           select: {
             id: true, title: true, status: true,
-            creator: { select: { profile: { select: { name: true } } } },
+            creator: { select: { profile: { select: { name: true, avatar: true } } } },
           },
         },
       },

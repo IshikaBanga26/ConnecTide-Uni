@@ -13,7 +13,10 @@ type Project = {
   techStack: string[]
   status: "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CLOSED"
   createdAt: string
-  creator: { id: string; profile: { name: string; department?: string } | null }
+  creator: {
+    id: string
+    profile: { name: string; avatar?: string | null; department?: string | null } | null
+  }
   applications: { id: string; role: string; status: string; userId: string }[]
 }
 
@@ -30,27 +33,46 @@ const inputStyle: React.CSSProperties = {
 }
 
 const STATUS_COLORS: Record<string, [string, string]> = {
-  OPEN: ["var(--teal-bg)", "var(--teal-text)"],
+  OPEN:        ["var(--teal-bg)",    "var(--teal-text)"],
   IN_PROGRESS: ["var(--accent-light)", "var(--accent)"],
-  COMPLETED: ["var(--bg-elevated)", "var(--text-muted)"],
-  CLOSED: ["var(--bg-elevated)", "var(--text-muted)"],
+  COMPLETED:   ["var(--bg-elevated)", "var(--text-muted)"],
+  CLOSED:      ["var(--bg-elevated)", "var(--text-muted)"],
 }
 
 function avatarColor(name: string): [string, string] {
   const palette: [string, string][] = [
     ["#0C4A6E", "#38BDF8"], ["#2E1065", "#A78BFA"],
-    ["#0284C7", "#7DD3FC"], ["#172554", "#60A5FA"], ["#1E1B4B", "#818CF8"],
+    ["#134E4A", "#2DD4BF"], ["#172554", "#60A5FA"], ["#1E1B4B", "#818CF8"],
   ]
   return palette[name.charCodeAt(0) % palette.length]
 }
 
+function Avatar({ name, avatar, size = 26 }: { name: string; avatar?: string | null; size?: number }) {
+  const [bg, text] = avatarColor(name)
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: size > 32 ? "50%" : "8px",
+      backgroundColor: bg, color: text,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontWeight: 700, fontSize: size * 0.4, flexShrink: 0, overflow: "hidden",
+    }}>
+      {avatar
+        ? <img src={avatar} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        : name[0]?.toUpperCase()
+      }
+    </div>
+  )
+}
+
 function ProjectCard({ project, currentUserId, onApply }: {
-  project: Project; currentUserId: string; onApply: (project: Project) => void
+  project: Project
+  currentUserId: string
+  onApply: (p: Project) => void
 }) {
   const isOwn = project.creator.id === currentUserId
   const myApplication = project.applications.find(a => a.userId === currentUserId)
-  const [bg, text] = avatarColor(project.creator.profile?.name ?? "?")
   const [statusBg, statusText] = STATUS_COLORS[project.status]
+  const creatorName = project.creator.profile?.name ?? "Unknown"
 
   return (
     <div style={{
@@ -82,7 +104,6 @@ function ProjectCard({ project, currentUserId, onApply }: {
         {project.description}
       </p>
 
-      {/* Roles needed */}
       {project.rolesNeeded.length > 0 && (
         <div>
           <p style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.08em", marginBottom: "6px" }}>
@@ -107,7 +128,6 @@ function ProjectCard({ project, currentUserId, onApply }: {
         </div>
       )}
 
-      {/* Tech stack */}
       {project.techStack.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
           {project.techStack.map(t => (
@@ -122,20 +142,11 @@ function ProjectCard({ project, currentUserId, onApply }: {
         </div>
       )}
 
-      {/* Footer: creator + apply button */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "4px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{
-            width: "26px", height: "26px", borderRadius: "8px",
-            backgroundColor: bg, color: text,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontWeight: 700, fontSize: "11px", flexShrink: 0,
-          }}>
-            {project.creator.profile?.name?.[0]?.toUpperCase() ?? "?"}
-          </div>
-          <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-            {project.creator.profile?.name ?? "Unknown"}
-          </span>
+          {/* Avatar now shows profile picture if available */}
+          <Avatar name={creatorName} avatar={project.creator.profile?.avatar} size={26} />
+          <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{creatorName}</span>
         </div>
 
         {!isOwn && project.status === "OPEN" && (
@@ -175,8 +186,7 @@ function ApplyModal({ project, onClose, onApplied }: {
   )
 
   const submit = async () => {
-    setError("")
-    setSubmitting(true)
+    setError(""); setSubmitting(true)
     try {
       const res = await fetch("/api/projects/apply", {
         method: "POST",
@@ -185,11 +195,8 @@ function ApplyModal({ project, onClose, onApplied }: {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); return }
-      onApplied()
-      onClose()
-    } finally {
-      setSubmitting(false)
-    }
+      onApplied(); onClose()
+    } finally { setSubmitting(false) }
   }
 
   return (
@@ -205,22 +212,20 @@ function ApplyModal({ project, onClose, onApplied }: {
         <p style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
           Apply to &ldquo;{project.title}&rdquo;
         </p>
-
         {error && (
           <p style={{ fontSize: "12px", color: "var(--amber-text)", backgroundColor: "var(--amber-bg)", padding: "8px 12px", borderRadius: "8px", margin: 0 }}>
             {error}
           </p>
         )}
-
         <div>
           <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
             Which role?
           </label>
-          <select value={role} onChange={e => setRole(e.target.value)} style={{ ...inputStyle, width: "100%", cursor: "pointer" }}>
+          <select value={role} onChange={e => setRole(e.target.value)}
+            style={{ ...inputStyle, width: "100%", cursor: "pointer" }}>
             {availableRoles.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
         </div>
-
         <div>
           <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
             Message (optional)
@@ -229,24 +234,62 @@ function ApplyModal({ project, onClose, onApplied }: {
             placeholder="Why are you a good fit?"
             style={{ ...inputStyle, width: "100%", resize: "none" }} />
         </div>
-
         <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
           <button onClick={onClose} style={{
             padding: "8px 16px", borderRadius: "10px", fontSize: "13px", fontWeight: 600,
-            color: "var(--text-muted)", backgroundColor: "transparent", border: "1px solid var(--border)",
-            cursor: "pointer", fontFamily: "inherit",
-          }}>
-            Cancel
-          </button>
+            color: "var(--text-muted)", backgroundColor: "transparent",
+            border: "1px solid var(--border)", cursor: "pointer", fontFamily: "inherit",
+          }}>Cancel</button>
           <button onClick={submit} disabled={submitting} style={{
             padding: "8px 18px", borderRadius: "10px", fontSize: "13px", fontWeight: 700,
             color: "var(--bg-primary)", backgroundColor: "var(--accent)", border: "none",
             cursor: submitting ? "not-allowed" : "pointer", fontFamily: "inherit",
           }}>
-            {submitting ? "Applying..." : "Submit Application"}
+            {submitting ? "Applying..." : "Submit"}
           </button>
         </div>
       </div>
+    </div>
+  )
+}
+
+function ApplicationsList({ applications, onUpdate }: {
+  projectId: string
+  applications: { id: string; role: string; status: string; userId: string }[]
+  onUpdate: () => void
+}) {
+  const respond = async (applicationId: string, accept: boolean) => {
+    await fetch("/api/projects/respond", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ applicationId, accept }),
+    })
+    onUpdate()
+  }
+  const pending = applications.filter(a => a.status === "PENDING")
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      {pending.map(app => (
+        <div key={app.id} style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          backgroundColor: "var(--bg-secondary)", borderRadius: "10px", padding: "8px 12px",
+        }}>
+          <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+            Applied for <strong style={{ color: "var(--text-primary)" }}>{app.role}</strong>
+          </span>
+          <div style={{ display: "flex", gap: "6px" }}>
+            <button onClick={() => respond(app.id, true)} style={{
+              fontSize: "11px", fontWeight: 600, padding: "4px 10px", borderRadius: "8px",
+              backgroundColor: "var(--accent)", color: "var(--bg-primary)", border: "none", cursor: "pointer",
+            }}>Accept</button>
+            <button onClick={() => respond(app.id, false)} style={{
+              fontSize: "11px", fontWeight: 600, padding: "4px 10px", borderRadius: "8px",
+              backgroundColor: "transparent", color: "var(--text-muted)",
+              border: "1px solid var(--border)", cursor: "pointer",
+            }}>Decline</button>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -260,7 +303,6 @@ export default function ProjectsPage() {
   const [tab, setTab] = useState<"browse" | "create" | "mine">("browse")
   const [applyingTo, setApplyingTo] = useState<Project | null>(null)
 
-  // Create form
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [roleInput, setRoleInput] = useState("")
@@ -298,7 +340,6 @@ export default function ProjectsPage() {
     if (!title.trim()) { setCreateError("Title is required"); return }
     if (!description.trim()) { setCreateError("Description is required"); return }
     if (roles.length === 0) { setCreateError("Add at least one role"); return }
-
     setCreating(true)
     try {
       const res = await fetch("/api/projects/create", {
@@ -309,11 +350,8 @@ export default function ProjectsPage() {
       const data = await res.json()
       if (!res.ok) { setCreateError(data.error); return }
       setTitle(""); setDescription(""); setRoles([]); setTechStack([])
-      setTab("browse")
-      fetchProjects()
-    } finally {
-      setCreating(false)
-    }
+      setTab("browse"); fetchProjects()
+    } finally { setCreating(false) }
   }
 
   const myProjects = projects.filter(p => p.creator.id === user?.id)
@@ -329,14 +367,11 @@ export default function ProjectsPage() {
   return (
     <DashboardLayout>
       <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-
         <div>
           <h1 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.4px", margin: 0 }}>
             Project Collaboration
           </h1>
-          <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "4px" }}>
-            Build something together
-          </p>
+          <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "4px" }}>Build something together</p>
         </div>
 
         <div style={{
@@ -362,9 +397,7 @@ export default function ProjectsPage() {
           ) : projects.length === 0 ? (
             <div style={{ textAlign: "center", padding: "64px 24px" }}>
               <p style={{ fontWeight: 600, color: "var(--text-secondary)" }}>No projects yet</p>
-              <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>
-                Be the first to post one
-              </p>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>Be the first to post one</p>
             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
@@ -386,27 +419,18 @@ export default function ProjectsPage() {
                 {createError}
               </p>
             )}
-
             <div>
-              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
-                Project Title *
-              </label>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>Project Title *</label>
               <input value={title} onChange={e => setTitle(e.target.value)}
                 placeholder="e.g. Campus Event App" style={{ ...inputStyle, width: "100%" }} />
             </div>
-
             <div>
-              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
-                Description *
-              </label>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>Description *</label>
               <textarea value={description} onChange={e => setDescription(e.target.value)} rows={4}
                 placeholder="What are you building and why?" style={{ ...inputStyle, width: "100%", resize: "none" }} />
             </div>
-
             <div>
-              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
-                Roles Needed *
-              </label>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>Roles Needed *</label>
               <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
                 <input value={roleInput} onChange={e => setRoleInput(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && (e.preventDefault(), addRole())}
@@ -415,9 +439,7 @@ export default function ProjectsPage() {
                   padding: "9px 16px", backgroundColor: "var(--violet-bg)", color: "var(--violet-text)",
                   border: "1px solid rgba(167,139,250,0.3)", borderRadius: "10px",
                   fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-                }}>
-                  Add
-                </button>
+                }}>Add</button>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                 {roles.map(r => (
@@ -435,11 +457,8 @@ export default function ProjectsPage() {
                 ))}
               </div>
             </div>
-
             <div>
-              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
-                Tech Stack
-              </label>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>Tech Stack</label>
               <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
                 <input value={techInput} onChange={e => setTechInput(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && (e.preventDefault(), addTech())}
@@ -448,23 +467,19 @@ export default function ProjectsPage() {
                   padding: "9px 16px", backgroundColor: "var(--accent-light)", color: "var(--accent)",
                   border: "1px solid rgba(14,165,233,0.3)", borderRadius: "10px",
                   fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-                }}>
-                  Add
-                </button>
+                }}>Add</button>
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
                 {POPULAR_SKILLS.slice(0, 10).map(s => (
                   <button key={s} onClick={() => setTechInput(s)} style={{
                     fontSize: "11px", padding: "3px 10px", border: "1px solid var(--border)",
                     borderRadius: "20px", color: "var(--text-muted)", backgroundColor: "transparent",
                     cursor: "pointer", fontFamily: "inherit",
-                  }}>
-                    {s}
-                  </button>
+                  }}>{s}</button>
                 ))}
               </div>
               {techStack.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {techStack.map(t => (
                     <span key={t} style={{
                       fontSize: "12px", padding: "4px 10px", borderRadius: "8px",
@@ -481,13 +496,12 @@ export default function ProjectsPage() {
                 </div>
               )}
             </div>
-
             <button onClick={createProject} disabled={creating} style={{
               padding: "10px 24px", borderRadius: "10px", fontSize: "13px", fontWeight: 700,
               backgroundColor: creating ? "var(--accent-light)" : "var(--accent)",
               color: creating ? "var(--accent)" : "var(--bg-primary)",
-              border: "1px solid rgba(14,165,233,0.3)", cursor: creating ? "not-allowed" : "pointer",
-              fontFamily: "inherit", alignSelf: "flex-start",
+              border: "1px solid rgba(14,165,233,0.3)",
+              cursor: creating ? "not-allowed" : "pointer", fontFamily: "inherit", alignSelf: "flex-start",
             }}>
               {creating ? "Posting..." : "Post Project"}
             </button>
@@ -496,9 +510,7 @@ export default function ProjectsPage() {
 
         {tab === "mine" && (
           myProjects.length === 0 ? (
-            <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
-              You haven&apos;t posted any projects yet
-            </p>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>You haven&apos;t posted any projects yet</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {myProjects.map(p => (
@@ -506,17 +518,14 @@ export default function ProjectsPage() {
                   backgroundColor: "var(--bg-card)", border: "1px solid var(--border)",
                   borderRadius: "16px", padding: "20px",
                 }}>
-                  <p style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", margin: "0 0 8px" }}>
-                    {p.title}
-                  </p>
+                  <p style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", margin: "0 0 8px" }}>{p.title}</p>
                   <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "12px" }}>
                     {p.applications.length} application{p.applications.length !== 1 ? "s" : ""}
                   </p>
-                  {p.applications.filter(a => a.status === "PENDING").length > 0 ? (
-                    <ApplicationsList projectId={p.id} applications={p.applications} onUpdate={fetchProjects} />
-                  ) : (
-                    <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>No pending applications</p>
-                  )}
+                  {p.applications.filter(a => a.status === "PENDING").length > 0
+                    ? <ApplicationsList projectId={p.id} applications={p.applications} onUpdate={fetchProjects} />
+                    : <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>No pending applications</p>
+                  }
                 </div>
               ))}
             </div>
@@ -528,47 +537,5 @@ export default function ProjectsPage() {
         <ApplyModal project={applyingTo} onClose={() => setApplyingTo(null)} onApplied={fetchProjects} />
       )}
     </DashboardLayout>
-  )
-}
-
-function ApplicationsList({ applications, onUpdate }: {
-  projectId: string
-  applications: { id: string; role: string; status: string; userId: string }[]
-  onUpdate: () => void
-}) {
-  const respond = async (applicationId: string, accept: boolean) => {
-    await fetch("/api/projects/respond", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ applicationId, accept }),
-    })
-    onUpdate()
-  }
-
-  const pending = applications.filter(a => a.status === "PENDING")
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-      {pending.map(app => (
-        <div key={app.id} style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          backgroundColor: "var(--bg-secondary)", borderRadius: "10px", padding: "8px 12px",
-        }}>
-          <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-            Applied for <strong style={{ color: "var(--text-primary)" }}>{app.role}</strong>
-          </span>
-          <div style={{ display: "flex", gap: "6px" }}>
-            <button onClick={() => respond(app.id, true)} style={{
-              fontSize: "11px", fontWeight: 600, padding: "4px 10px", borderRadius: "8px",
-              backgroundColor: "var(--accent)", color: "var(--bg-primary)", border: "none", cursor: "pointer",
-            }}>Accept</button>
-            <button onClick={() => respond(app.id, false)} style={{
-              fontSize: "11px", fontWeight: 600, padding: "4px 10px", borderRadius: "8px",
-              backgroundColor: "transparent", color: "var(--text-muted)", border: "1px solid var(--border)", cursor: "pointer",
-            }}>Decline</button>
-          </div>
-        </div>
-      ))}
-    </div>
   )
 }
