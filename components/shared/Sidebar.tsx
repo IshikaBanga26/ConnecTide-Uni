@@ -15,7 +15,11 @@ const navItems = [
 ]
 
 function Icon({ name }: { name: string }) {
-  const common = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }
+  const common = {
+    width: 18, height: 18, viewBox: "0 0 24 24", fill: "none",
+    stroke: "currentColor", strokeWidth: 1.8,
+    strokeLinecap: "round" as const, strokeLinejoin: "round" as const,
+  }
   switch (name) {
     case "search":  return <svg {...common}><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
     case "swap":    return <svg {...common}><path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" /></svg>
@@ -59,7 +63,6 @@ export function Sidebar() {
       display: "flex", flexDirection: "column",
       transition: "width 0.2s ease", zIndex: 40,
     }}>
-      {/* Wordmark + collapse */}
       <div style={{
         height: "58px", display: "flex", alignItems: "center",
         justifyContent: collapsed ? "center" : "space-between",
@@ -87,7 +90,6 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Nav */}
       <nav style={{ flex: 1, padding: "12px 10px", display: "flex", flexDirection: "column", gap: "2px" }}>
         {navItems.map(item => {
           const isActive = pathname === item.href
@@ -112,7 +114,6 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* User section */}
       <div ref={menuRef} style={{ position: "relative", padding: "12px 10px", borderTop: "1px solid var(--border)" }}>
         <button onClick={() => setMenuOpen(prev => !prev)} style={{
           display: "flex", alignItems: "center", gap: "10px", width: "100%",
