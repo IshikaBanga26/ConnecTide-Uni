@@ -121,7 +121,7 @@ export default function DiscoverPage() {
             }}>⌕</span>
             <input
               value={skill} onChange={e => setSkill(e.target.value)}
-              placeholder="Search by skill — React, Python..."
+              placeholder="Search by name or skill — Ishika, React..."
               style={{ ...filterInputStyle, width: "100%", paddingLeft: "28px" }}
               onFocus={e => (e.target as HTMLElement).style.borderColor = "var(--accent)"}
               onBlur={e => (e.target as HTMLElement).style.borderColor = "var(--border)"}

@@ -278,7 +278,7 @@ export function EditProfileForm({ initial, onSave, onCancel }: Props) {
             placeholder="Type a skill and press Enter..."
             style={{ ...inputStyle, flex: 1 }} />
           <select value={skillLevel} onChange={e => setSkillLevel(e.target.value)}
-            style={{ ...inputStyle, width: "auto", cursor: "pointer" }}>
+            style={{ ...inputStyle, width: "auto", cursor: "pointer", paddingRight: "32px", minWidth: "130px" }}>
             {SKILL_LEVELS.map(l => (
               <option key={l} value={l} style={{ backgroundColor: "var(--bg-secondary)" }}>{l}</option>
             ))}

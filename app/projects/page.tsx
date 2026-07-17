@@ -20,16 +20,18 @@ type Project = {
   applications: { id: string; role: string; status: string; userId: string }[]
 }
 
-const inputStyle: React.CSSProperties = {
-  padding: "9px 12px",
-  backgroundColor: "var(--bg-input)",
-  border: "1px solid var(--border)",
-  borderRadius: "10px",
-  color: "var(--text-primary)",
-  fontSize: "13px",
-  fontFamily: "inherit",
-  outline: "none",
-  transition: "border-color 0.15s ease",
+type MyApplication = {
+  id: string
+  role: string
+  status: "PENDING" | "ACCEPTED" | "REJECTED"
+  message?: string | null
+  createdAt: string
+  project: {
+    id: string
+    title: string
+    status: string
+    creator: { profile: { name: string; avatar?: string | null } | null }
+  }
 }
 
 const STATUS_COLORS: Record<string, [string, string]> = {
@@ -45,6 +47,18 @@ function avatarColor(name: string): [string, string] {
     ["#134E4A", "#2DD4BF"], ["#172554", "#60A5FA"], ["#1E1B4B", "#818CF8"],
   ]
   return palette[name.charCodeAt(0) % palette.length]
+}
+
+const inputStyle: React.CSSProperties = {
+  backgroundColor: "var(--bg-input)",
+  border: "1px solid var(--border)",
+  borderRadius: "10px",
+  color: "var(--text-primary)",
+  fontSize: "13px",
+  fontFamily: "inherit",
+  padding: "8px 12px",
+  outline: "none",
+  transition: "border-color 0.15s ease",
 }
 
 function Avatar({ name, avatar, size = 26 }: { name: string; avatar?: string | null; size?: number }) {
@@ -253,11 +267,12 @@ function ApplyModal({ project, onClose, onApplied }: {
   )
 }
 
-function ApplicationsList({ applications, onUpdate }: {
+function ApplicationsList({ projectId, applications, onUpdate }: {
   projectId: string
   applications: { id: string; role: string; status: string; userId: string }[]
   onUpdate: () => void
 }) {
+  void projectId // used for future features
   const respond = async (applicationId: string, accept: boolean) => {
     await fetch("/api/projects/respond", {
       method: "PATCH",
@@ -300,8 +315,9 @@ export default function ProjectsPage() {
 
   const [projects, setProjects] = useState<Project[]>([])
   const [fetching, setFetching] = useState(true)
-  const [tab, setTab] = useState<"browse" | "create" | "mine">("browse")
+  const [tab, setTab] = useState<"browse" | "create" | "mine" | "applied">("browse")
   const [applyingTo, setApplyingTo] = useState<Project | null>(null)
+  const [myApplications, setMyApplications] = useState<MyApplication[]>([])
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -324,7 +340,17 @@ export default function ProjectsPage() {
     setFetching(false)
   }, [])
 
+  const fetchMyApplications = useCallback(async () => {
+    const res = await fetch("/api/projects/my-applications")
+    const data = await res.json()
+    if (data.success) setMyApplications(data.data)
+  }, [])
+
   useEffect(() => { if (user) fetchProjects() }, [user, fetchProjects])
+
+  useEffect(() => {
+    if (user && tab === "applied") fetchMyApplications()
+  }, [user, tab, fetchMyApplications])
 
   const addRole = () => {
     const r = roleInput.trim()
@@ -378,7 +404,7 @@ export default function ProjectsPage() {
           display: "flex", gap: "2px", backgroundColor: "var(--bg-secondary)",
           border: "1px solid var(--border)", borderRadius: "24px", padding: "4px", width: "fit-content",
         }}>
-          {(["browse", "create", "mine"] as const).map(t => (
+          {(["browse", "create", "mine", "applied"] as const).map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               padding: "5px 18px", borderRadius: "20px", fontSize: "13px",
               fontWeight: tab === t ? 600 : 500,
@@ -386,7 +412,7 @@ export default function ProjectsPage() {
               backgroundColor: tab === t ? "var(--bg-elevated)" : "transparent",
               border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s ease",
             }}>
-              {t === "browse" ? "Browse" : t === "create" ? "Post a Project" : "My Projects"}
+              {t === "browse" ? "Browse" : t === "create" ? "Post a Project" : t === "mine" ? "My Projects" : "My Applications"}
             </button>
           ))}
         </div>
@@ -531,11 +557,72 @@ export default function ProjectsPage() {
             </div>
           )
         )}
-      </div>
+        {tab === "applied" && (
+          myApplications.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "64px 24px" }}>
+              <p style={{ fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
+                No applications yet
+              </p>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+                Browse projects and apply to roles that match your skills
+              </p>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {myApplications.map(app => {
+                const statusColors: Record<string, [string, string]> = {
+                  PENDING:  ["var(--amber-bg)",   "var(--amber-text)"],
+                  ACCEPTED: ["var(--teal-bg)",    "var(--teal-text)"],
+                  REJECTED: ["var(--bg-elevated)", "var(--text-muted)"],
+                }
+                const [statusBg, statusText] = statusColors[app.status]
 
-      {applyingTo && (
-        <ApplyModal project={applyingTo} onClose={() => setApplyingTo(null)} onApplied={fetchProjects} />
-      )}
+                return (
+                  <div key={app.id} style={{
+                    backgroundColor: "var(--bg-card)", border: "1px solid var(--border)",
+                    borderRadius: "14px", padding: "18px 20px",
+                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px",
+                  }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", margin: "0 0 4px" }}>
+                        {app.project.title}
+                      </p>
+                      <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: 0 }}>
+                        Applied for <strong style={{ color: "var(--text-secondary)" }}>{app.role}</strong>
+                        {" · "}by {app.project.creator.profile?.name ?? "Unknown"}
+                      </p>
+                      {app.message && (
+                        <p style={{
+                          fontSize: "12px", color: "var(--text-muted)", marginTop: "6px",
+                          fontStyle: "italic",
+                        }}>
+                          &ldquo;{app.message}&rdquo;
+                        </p>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px", flexShrink: 0 }}>
+                      <span style={{
+                        fontSize: "11px", fontWeight: 700, padding: "4px 12px",
+                        borderRadius: "20px", backgroundColor: statusBg, color: statusText,
+                        letterSpacing: "0.04em",
+                      }}>
+                        {app.status}
+                      </span>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                        {new Date(app.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        )}
+
+        {applyingTo && (
+          <ApplyModal project={applyingTo} onClose={() => setApplyingTo(null)} onApplied={fetchProjects} />
+        )}
+      </div>
     </DashboardLayout>
   )
 }

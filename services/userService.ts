@@ -150,13 +150,20 @@ export const userService = {
         ...(department && { department }),
         ...(year && { year }),
         ...(skill && {
-          skills: {
-            some: {
-              skill: {
-                name: { contains: skill, mode: "insensitive" },
+          OR: [
+            {
+              name: { contains: skill, mode: "insensitive" },
+            },
+            {
+              skills: {
+                some: {
+                  skill: {
+                    name: { contains: skill, mode: "insensitive" },
+                  },
+                },
               },
             },
-          },
+          ],
         }),
         ...(interest && {
           interests: {
@@ -185,9 +192,20 @@ export const userService = {
         ...(department && { department }),
         ...(year && { year }),
         ...(skill && {
-          skills: {
-            some: { skill: { name: { contains: skill, mode: "insensitive" } } },
-          },
+          OR: [
+            {
+              name: { contains: skill, mode: "insensitive" },
+            },
+            {
+              skills: {
+                some: {
+                  skill: {
+                    name: { contains: skill, mode: "insensitive" },
+                  },
+                },
+              },
+            },
+          ],
         }),
       },
     })

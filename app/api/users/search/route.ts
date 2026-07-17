@@ -16,7 +16,13 @@ export async function GET(req: NextRequest) {
     const interest = searchParams.get("interest") ?? undefined
     const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1
 
-    const result = await userService.searchStudents({ skill, department, year, interest, page })
+    const result = await userService.searchStudents({
+      skill,
+      department,
+      year,
+      interest,
+      page,
+    })
     return successResponse(result)
   } catch {
     return errorResponse("Search failed", 500)
