@@ -216,7 +216,7 @@ export default function AIPage() {
         {/* Header */}
         <div>
           <h1 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.4px", margin: 0 }}>
-            AI Features
+            AI Hub
           </h1>
           <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "4px" }}>
             Powered by Groq + Cohere — your personal academic AI

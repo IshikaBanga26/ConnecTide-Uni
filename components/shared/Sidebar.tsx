@@ -9,9 +9,7 @@ const navItems = [
   { href: "/exchange",    label: "Exchange",    icon: "swap" },
   { href: "/resources",   label: "Resources",   icon: "doc" },
   { href: "/projects",    label: "Projects",    icon: "layers" },
-  { href: "/connections", label: "Connections", icon: "people" },
-  { href: "/chat",        label: "Messages",    icon: "chat" },
-  { href: "/ai",          label: "AI Features", icon: "ai" },
+  { href: "/ai",          label: "AI Hub",      icon: "ai" },
   { href: "/badges",      label: "Badges",      icon: "star" },
 ]
 

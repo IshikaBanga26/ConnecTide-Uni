@@ -20,8 +20,11 @@
   --accent-solid-hover: #0369A1;
 
   --rose: #F43F5E;
-  --rose-light: #4C1130;
+  --rose-light: rgba(244, 63, 94, 0.16);
   --rose-glow: rgba(244, 63, 94, 0.15);
+  --amber: #FBBF24;
+  --amber-bg: rgba(251, 191, 36, 0.15);
+  --amber-text: #FDE047;
   --teal: #0EA5E9;
   --teal-bg: #0C4A6E;
   --teal-text: #7DD3FC;
