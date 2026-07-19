@@ -84,7 +84,7 @@ export default function DiscoverPage() {
   const hasFilters = skill || department || year
 
   if (loading) return (
-    <DashboardLayout showBell>
+    <DashboardLayout>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "240px" }}>
         <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Loading...</p>
       </div>
@@ -92,7 +92,7 @@ export default function DiscoverPage() {
   )
 
   return (
-    <DashboardLayout showBell>
+    <DashboardLayout>
       <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
 
         {/* Header */}
