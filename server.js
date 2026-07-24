@@ -11,6 +11,8 @@ const io = new Server(httpServer, {
     origin: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
     credentials: true,
   },
+  allowEIO3: true,
+  transports: ["polling", "websocket"],
 })
 
 // Verify JWT before allowing socket connection
